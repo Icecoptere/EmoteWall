@@ -3,7 +3,7 @@ let nomChaine = "icecoptered";
 //Quality can be 1.0, 2.0 or 3.0 for best quality
 let quality = "2.0";
 //The height of all emotes in px
-let sizeEmote = 100;
+let sizeEmote = 80;
 //The delay between two image updates in ms
 let delayUpdate = 10;
 //The delay between each image produce with !produce

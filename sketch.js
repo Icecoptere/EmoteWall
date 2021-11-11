@@ -164,9 +164,11 @@ client.on('message', (wat, tags, message, self) => {
     }
     if(dictBTTV !== {}){
 	let url = "https://cdn.betterttv.net/emote/";
+	listeEmotesBTTV = [];
 	message.split(" ").forEach((i)=>{
 		if(i in dictBTTV){
 			listeEmote.push(new Emote(url+dictBTTV[i]+"/2x"));
+            listeEmotesBTTV.push(url+dictBTTV[i]+"/2x");
 			setupTimeInterval();
 		}
 	});
@@ -206,14 +208,23 @@ client.on('message', (wat, tags, message, self) => {
                 }
                 setupTimeInterval();
             } else if (command === "produce") {
-                console.log("");
-                if (emotes != null) {
+                if (produceInterval != null) {
+                    clearInterval(produceInterval);
+                }
+                if (emotes != null || listeEmotesBTTV.length >0) {
                     produceInterval = setInterval(
                         function test() {
-                            listeEmote.push(new Emote(url + keys[randomValue(0, keys.length)] + "/default/dark/" + quality));
-                            setupTimeInterval();
+                            if(listeEmotesBTTV.length>0){
+                                listeEmote.push(new Emote(listeEmotesBTTV[randomValue(0, listeEmotesBTTV.length)] ));
+                                setupTimeInterval();
+                            }
+                            if(emotes != null){
+                                listeEmote.push(new Emote(url + keys[randomValue(0, keys.length)] + "/default/dark/" + quality));
+                                setupTimeInterval();
+                            }
                         }, delayProduce);
-                } else {
+                }
+                else{
                     produceInterval = setInterval(
                         function test() {
                             listeEmote.push(new Emote(url + randomValue(1, 10000) + "/default/dark/" + quality));

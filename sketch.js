@@ -89,17 +89,17 @@ class Emote {
     }
 }
 
-function updateAllEmote(){
-    for(let i=0; i<listeEmote.length; i++){
-	if(listeEmote[i].ready){
-	        listeEmote[i].move();
-	        listeEmote[i].update();
+function updateAllEmote(liste){
+    for(let i=0; i<liste.length; i++){
+	if(liste[i].ready){
+        liste[i].move();
+        liste[i].update();
 	}
-        if(listeEmote[i].timeToSpend <= 0){
-            const index = listeEmote.indexOf(listeEmote[i]);
+        if(liste[i].timeToSpend <= 0){
+            const index = liste.indexOf(liste[i]);
             if (index > -1) {
-                listeEmote[i].selfDestruct();
-                listeEmote.splice(index, 1);
+                liste[i].selfDestruct();
+                liste.splice(index, 1);
             }
         }
     }
@@ -118,6 +118,7 @@ const client = new tmi.Client({
 client.connect();
 
 let listeEmote = [];
+let listeEmoteProduce = [];
 let timeIntervalVar;
 let channelId;
 let dictBTTV = {};
@@ -136,8 +137,12 @@ function setupTimeInterval(){
         timeIntervalVar = setInterval(
             function test(){
                 if(listeEmote.length >0){
-                    updateAllEmote();
-                }else{
+                    updateAllEmote(listeEmote);
+                }
+                if(listeEmoteProduce.length >0){
+                    updateAllEmote(listeEmoteProduce);
+                }
+                if(listeEmoteProduce.length == 0 && listeEmote.length == 0){
                     clearInterval(timeIntervalVar);
                     timeIntervalVar = null
                 }
@@ -211,15 +216,20 @@ client.on('message', (wat, tags, message, self) => {
                 if (produceInterval != null) {
                     clearInterval(produceInterval);
                 }
-                if (emotes != null || listeEmotesBTTV.length >0) {
+                let listeEmotesBTTVProduce = listeEmotesBTTV.slice();
+                let keysProduce;
+                if(keys != null) {
+                    keysProduce = keys.slice();
+                }
+                if (emotes != null || listeEmotesBTTVProduce.length >0) {
                     produceInterval = setInterval(
                         function test() {
-                            if(listeEmotesBTTV.length>0){
-                                listeEmote.push(new Emote(listeEmotesBTTV[randomValue(0, listeEmotesBTTV.length)] ));
+                            if(listeEmotesBTTVProduce.length>0){
+                                listeEmoteProduce.push(new Emote(listeEmotesBTTVProduce[randomValue(0, listeEmotesBTTVProduce.length)] ));
                                 setupTimeInterval();
                             }
-                            if(emotes != null){
-                                listeEmote.push(new Emote(url + keys[randomValue(0, keys.length)] + "/default/dark/" + quality));
+                            if(keysProduce != null){
+                                listeEmoteProduce.push(new Emote(url + keysProduce[randomValue(0, keysProduce.length)] + "/default/dark/" + quality));
                                 setupTimeInterval();
                             }
                         }, delayProduce);
@@ -227,11 +237,11 @@ client.on('message', (wat, tags, message, self) => {
                 else{
                     produceInterval = setInterval(
                         function test() {
-                            listeEmote.push(new Emote(url + randomValue(1, 10000) + "/default/dark/" + quality));
+                            listeEmoteProduce.push(new Emote(url + randomValue(1, 10000) + "/default/dark/" + quality));
                             setupTimeInterval();
                         }, delayProduce);
                 }
-            } else if (command === "stop") {
+            } else if (command === "stop2") {
                 if (produceInterval != null) {
                     clearInterval(produceInterval);
                 }
